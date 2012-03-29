@@ -70,7 +70,7 @@ describe 'integration of sinon.js sandbox feature for Jasmine', ->
   describe 'restoring the sandboxed stubs by using global#testAndRestore', ->
     
     beforeEach -> 
-      @context = _sinonSandbox: restore: jasmine.createSpy '_sinonSandbox.restore'
+      @context = _sinonSandbox: verifyAndRestore: jasmine.createSpy '_sinonSandbox.verifyAndRestore'
       @sinonTestSpy = spyOn sinon, 'test'
     
     it 'should execute the passed function with correct context', ->
@@ -87,7 +87,7 @@ describe 'integration of sinon.js sandbox feature for Jasmine', ->
       returnedFunction = testAndRestore ->
       returnedFunction.call @context
       
-      (expect @context._sinonSandbox.restore).toHaveBeenCalled()
+      (expect @context._sinonSandbox.verifyAndRestore).toHaveBeenCalled()
       
     it 'should wrap the given test block with sinon.test if no sandbox is setup', ->
       thisValueInTestBlock = null

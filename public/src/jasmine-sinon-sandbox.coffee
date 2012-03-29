@@ -19,7 +19,7 @@ global.testAndRestore = (customTestBlock) ->
   return ->
     if @_sinonSandbox?
       customTestBlock.call this
-      @_sinonSandbox.restore()
+      @_sinonSandbox.verifyAndRestore()
     else
       wrappedCustomTestBlock = sinon.test customTestBlock
       wrappedCustomTestBlock.call this
