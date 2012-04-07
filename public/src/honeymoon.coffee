@@ -1,50 +1,52 @@
 
-jasmine.HoneyMoon =
+jasmine.honeymoon =
 
-  originalBeforeEach: beforeEach
-  originalIt: it
+  Sandbox:
 
-  createSandbox: (sandboxConfiguration={}) ->
-    sandboxConfiguration.context ?= window
-    sandboxConfiguration.useFakeTimers ?= false
-    sandboxConfiguration.useFakeServer ?= false
+    originalBeforeEach: beforeEach
+    originalIt: it
 
-    context = sandboxConfiguration.context
+    create: (sandboxConfiguration={}) ->
+      sandboxConfiguration.context ?= window
+      sandboxConfiguration.useFakeTimers ?= false
+      sandboxConfiguration.useFakeServer ?= false
 
-    # don't override existing sandbox
-    return if context._sinonSandbox?
+      context = sandboxConfiguration.context
 
-    context._sinonSandbox = sinon.sandbox.create
-      injectInto: context
-      properties: ["spy", "stub", "mock", "restore", "clock", "server", "requests"]
-      useFakeTimers: sandboxConfiguration.useFakeTimers
-      useFakeServer: sandboxConfiguration.useFakeServer
+      # don't override existing sandbox
+      return if context._sinonSandbox?
 
-  beforeEach: (sandboxConfiguration, customBeforeEachBlock) ->
+      context._sinonSandbox = sinon.sandbox.create
+        injectInto: context
+        properties: ["spy", "stub", "mock", "restore", "clock", "server", "requests"]
+        useFakeTimers: sandboxConfiguration.useFakeTimers
+        useFakeServer: sandboxConfiguration.useFakeServer
 
-    # no sandbox configuration provided
-    if arguments.length is 1 then customBeforeEachBlock = arguments[0]
+    beforeEach: (sandboxConfiguration, customBeforeEachBlock) ->
 
-    decoratedBeforeEach = ->
-      sandboxConfiguration.context = this
-      jasmine.HoneyMoon.createSandbox sandboxConfiguration
-      customBeforeEachBlock.call this
+      # no sandbox configuration provided
+      if arguments.length is 1 then customBeforeEachBlock = arguments[0]
 
-    beforeEach decoratedBeforeEach
+      decoratedBeforeEach = ->
+        sandboxConfiguration.context = this
+        jasmine.honeymoon.Sandbox.create sandboxConfiguration
+        customBeforeEachBlock.call this
 
-  it: (specText, specFunction) ->
+      beforeEach decoratedBeforeEach
 
-    decoratedSpecFunction = ->
-      jasmine.HoneyMoon.createSandbox { context: this }
-      specFunction.call this
-      @_sinonSandbox.restore()
+    it: (specText, specFunction) ->
 
-    it specText, decoratedSpecFunction
+      decoratedSpecFunction = ->
+        jasmine.honeymoon.Sandbox.create { context: this }
+        specFunction.call this
+        @_sinonSandbox.restore()
 
-  overrideJasmineFunctions: ->
-    window.beforeEach = jasmine.HoneyMoon.beforeEach
-    window.it = jasmine.HoneyMoon.it
+      it specText, decoratedSpecFunction
 
-  restoreJasmineFunctions: ->
-    window.beforeEach = jasmine.HoneyMoon.originalBeforeEach
-    window.it = jasmine.HoneyMoon.originalIt
+    overrideJasmineFunctions: ->
+      window.beforeEach = jasmine.honeymoon.Sandbox.beforeEach
+      window.it = jasmine.honeymoon.Sandbox.it
+
+    restoreJasmineFunctions: ->
+      window.beforeEach = jasmine.honeymoon.Sandbox.originalBeforeEach
+      window.it = jasmine.honeymoon.Sandbox.originalIt
