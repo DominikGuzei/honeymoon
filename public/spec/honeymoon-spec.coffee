@@ -204,9 +204,9 @@ describe 'matcher integration of sinon into jasmine', ->
 
       (expect matcherPrototypes.toHaveBeenCalled.called).toBe false
 
-    it 'should use display name property for messages', ->
+    it 'should handle messages for sinon spies', ->
       expectContext = actual: sinon.spy()
-      matcherResult = Matchers.toHaveBeenCalled.call expectContext
+      Matchers.toHaveBeenCalled.call expectContext
 
       (expect expectContext.message()[0]).toBe "Expected #{expectContext.actual.displayName} to have been called at least once."
       (expect expectContext.message()[1]).toBe "Expected #{expectContext.actual.displayName} not to have been called."
@@ -228,3 +228,64 @@ describe 'matcher integration of sinon into jasmine', ->
       callWithWrongArgument = -> Matchers.toHaveBeenCalled.call actual: {}
 
       (expect callWithWrongArgument).toThrow()
+
+
+  describe 'toHaveBeenCalledWith', ->
+
+    beforeEach ->
+      sinon.stub matcherPrototypes, 'toHaveBeenCalledWith'
+
+    afterEach ->
+      matcherPrototypes.toHaveBeenCalledWith.restore()
+
+
+    it 'should call prototype of original matcher when jasmine spy is given', ->
+      expectContext = actual: jasmine.createSpy()
+      first = {}
+      second = {}
+
+      Matchers.toHaveBeenCalledWith.call expectContext, first, second
+
+      (expect matcherPrototypes.toHaveBeenCalledWith.calledWith first, second).toBe true
+      (expect matcherPrototypes.toHaveBeenCalledWith.thisValues[0]).toBe expectContext
+
+    it 'should not call original matcher when sinon spy is used', ->
+      Matchers.toHaveBeenCalledWith.call actual: sinon.spy()
+
+      (expect matcherPrototypes.toHaveBeenCalledWith.called).toBe false
+
+    it 'should handle messages when spy was called/not called', ->
+      expectContext = actual: sinon.spy()
+      parameter = "test paramters"
+
+      Matchers.toHaveBeenCalledWith.call expectContext, parameter
+
+      (expect expectContext.message()[0]).toBe "Expected #{expectContext.actual.displayName} to have been called with #{jasmine.pp([parameter])} but was never called."
+      (expect expectContext.message()[1]).toBe "Expected #{expectContext.actual.displayName} not to have been called with #{jasmine.pp([parameter])} but it was."
+
+    it 'should handle messages when spy was called/not called with correct arguments', ->
+      expectContext = actual: sinon.spy()
+      usedArgument = {}
+      expectedArgument = {}
+
+      expectContext.actual usedArgument # call spy
+      Matchers.toHaveBeenCalledWith.call expectContext, expectedArgument
+
+      (expect expectContext.message()[0]).toBe "Expected #{expectContext.actual.displayName} to have been called with #{jasmine.pp([expectedArgument])} but it was called with #{jasmine.pp([usedArgument])}."
+      (expect expectContext.message()[1]).toBe "Expected #{expectContext.actual.displayName} not to have been called with #{jasmine.pp([expectedArgument])} but it was called with #{jasmine.pp([usedArgument])}."
+
+    it 'should return false when sinon spy was not called with correct arguments', ->
+      matcherResult = Matchers.toHaveBeenCalledWith.call actual: sinon.spy(), "needed param"
+
+      (expect matcherResult).toBe false
+
+    it 'should return true when sinon spy was called with correct arguments', ->
+      calledSpy = sinon.spy()
+      first = ""
+      second = {}
+
+      calledSpy first, second
+
+      matcherResult = Matchers.toHaveBeenCalledWith.call { actual: calledSpy }, first, second
+
+      (expect matcherResult).toBe true

@@ -70,3 +70,25 @@ jasmine.honeymoon =
 
         return this.actual.called
 
+    toHaveBeenCalledWith: ->
+      if jasmine.isSpy @actual
+        jasmine.Matchers.prototype.toHaveBeenCalledWith.apply this, arguments
+      else
+        expectedArgs = jasmine.util.argsToArray arguments
+
+        unless @actual.called
+          @message = ->
+            [
+              "Expected #{@actual.displayName} to have been called with #{jasmine.pp expectedArgs} but was never called."
+              "Expected #{@actual.displayName} not to have been called with #{jasmine.pp expectedArgs} but it was."
+            ]
+
+        else
+          firstCallArgs = @actual.args[0][0]
+          @message = ->
+            [
+              "Expected #{@actual.displayName} to have been called with #{jasmine.pp expectedArgs} but it was called with #{jasmine.pp([firstCallArgs])}."
+              "Expected #{@actual.displayName} not to have been called with #{jasmine.pp expectedArgs} but it was called with #{jasmine.pp([firstCallArgs])}."
+            ]
+
+        return @actual.calledWith.apply @actual, arguments
