@@ -1,5 +1,6 @@
 
 Sandbox = jasmine.honeymoon.Sandbox
+Matchers = jasmine.honeymoon.Matchers
 
 describe 'jasmine.honeymoon.Sandbox.create', ->
 
@@ -175,3 +176,55 @@ describe 'jasmine.HoneyMoon.restoreJasmineFunctions', ->
     Sandbox.restoreJasmineFunctions()
 
     (expect it).toBe @originalIt
+
+
+describe 'matcher integration of sinon into jasmine', ->
+
+  matcherPrototypes = jasmine.Matchers.prototype
+
+  describe 'toHaveBeenCalled', ->
+
+    beforeEach ->
+      sinon.stub matcherPrototypes, 'toHaveBeenCalled'
+
+    afterEach ->
+      matcherPrototypes.toHaveBeenCalled.restore()
+
+
+    it 'should call prototype of original matcher when jasmine spy is given', ->
+      expectContext = actual: jasmine.createSpy()
+
+      Matchers.toHaveBeenCalled.call expectContext
+
+      (expect matcherPrototypes.toHaveBeenCalled.calledOnce).toBe true
+      (expect matcherPrototypes.toHaveBeenCalled.thisValues[0]).toBe expectContext
+
+    it 'should not call original matcher when sinon spy is used', ->
+      Matchers.toHaveBeenCalled.call actual: sinon.spy()
+
+      (expect matcherPrototypes.toHaveBeenCalled.called).toBe false
+
+    it 'should use display name property for messages', ->
+      expectContext = actual: sinon.spy()
+      matcherResult = Matchers.toHaveBeenCalled.call expectContext
+
+      (expect expectContext.message()[0]).toBe "Expected #{expectContext.actual.displayName} to have been called at least once."
+      (expect expectContext.message()[1]).toBe "Expected #{expectContext.actual.displayName} not to have been called."
+
+    it 'should return false when sinon spy was not called', ->
+      matcherResult = Matchers.toHaveBeenCalled.call actual: sinon.spy()
+
+      (expect matcherResult).toBe false
+
+    it 'should return true when sinon spy was called', ->
+      calledSpy = sinon.spy()
+      calledSpy()
+
+      matcherResult = Matchers.toHaveBeenCalled.call actual: calledSpy
+
+      (expect matcherResult).toBe true
+
+    it 'should throw error when wrong argument was provided', ->
+      callWithWrongArgument = -> Matchers.toHaveBeenCalled.call actual: {}
+
+      (expect callWithWrongArgument).toThrow()

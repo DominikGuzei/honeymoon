@@ -50,3 +50,23 @@ jasmine.honeymoon =
     restoreJasmineFunctions: ->
       window.beforeEach = jasmine.honeymoon.Sandbox.originalBeforeEach
       window.it = jasmine.honeymoon.Sandbox.originalIt
+
+
+  Matchers:
+
+    toHaveBeenCalled: ->
+      if jasmine.isSpy @actual
+        jasmine.Matchers.prototype.toHaveBeenCalled.call this
+      else
+
+        unless @actual.called? and @actual.displayName?
+          throw "Error in toHaveBeenCalled: Wrong argument. Jasmine or Sinon spy needed."
+
+        @message = ->
+          [
+            "Expected #{@actual.displayName} to have been called at least once."
+            "Expected #{@actual.displayName} not to have been called."
+          ]
+
+        return this.actual.called
+
