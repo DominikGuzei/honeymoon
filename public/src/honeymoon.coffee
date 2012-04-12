@@ -32,7 +32,7 @@ jasmine.honeymoon =
         jasmine.honeymoon.Sandbox.create sandboxConfiguration
         customBeforeEachBlock.call this
 
-      beforeEach decoratedBeforeEach
+      jasmine.honeymoon.Sandbox.originalBeforeEach decoratedBeforeEach
 
     it: (specText, specFunction) ->
 
@@ -41,7 +41,7 @@ jasmine.honeymoon =
         specFunction.call this
         @_sinonSandbox.restore()
 
-      it specText, decoratedSpecFunction
+      jasmine.honeymoon.Sandbox.originalIt specText, decoratedSpecFunction
 
     overrideJasmineFunctions: ->
       window.beforeEach = jasmine.honeymoon.Sandbox.beforeEach

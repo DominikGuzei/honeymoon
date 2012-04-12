@@ -47,7 +47,7 @@ describe 'jasmine.honeymoon.Sandbox.beforeEach', ->
 
   beforeEach ->
     @testContext = {}
-    @originalBeforeEach = (sinon.stub window, 'beforeEach').yieldsOn @testContext
+    @originalBeforeEach = (sinon.stub Sandbox, 'originalBeforeEach').yieldsOn @testContext
     @createSandboxSpy = spyOn Sandbox, 'create'
 
   afterEach ->
@@ -85,7 +85,7 @@ describe 'jasmine.honeymoon.Sandbox.it', ->
 
   beforeEach ->
     @specContext = _sinonSandbox: restore: sinon.spy()
-    @originalIt = sinon.stub window, 'it'
+    @originalIt = sinon.stub Sandbox, 'originalIt'
     @createSandboxStub = sinon.stub Sandbox, 'create'
 
   afterEach ->
