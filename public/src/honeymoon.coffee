@@ -68,8 +68,8 @@ jasmine.honeymoon =
 
         @message = ->
           [
-            "Expected #{@actual.displayName} to have been called at least once."
-            "Expected #{@actual.displayName} not to have been called."
+            "Expected ##{@actual.displayName} to have been called at least once."
+            "Expected ##{@actual.displayName} not to have been called."
           ]
 
         return this.actual.called
@@ -83,16 +83,16 @@ jasmine.honeymoon =
         unless @actual.called
           @message = ->
             [
-              "Expected #{@actual.displayName} to have been called with #{jasmine.pp expectedArgs} but was never called."
-              "Expected #{@actual.displayName} not to have been called with #{jasmine.pp expectedArgs} but it was."
+              "Expected ##{@actual.displayName} to have been called with #{jasmine.pp expectedArgs} but was never called."
+              "Expected ##{@actual.displayName} not to have been called with #{jasmine.pp expectedArgs} but it was."
             ]
 
         else
           firstCallArgs = @actual.args[0][0]
           @message = ->
             [
-              "Expected #{@actual.displayName} to have been called with #{jasmine.pp expectedArgs} but it was called with #{jasmine.pp([firstCallArgs])}."
-              "Expected #{@actual.displayName} not to have been called with #{jasmine.pp expectedArgs} but it was called with #{jasmine.pp([firstCallArgs])}."
+              "Expected ##{@actual.displayName} to have been called with #{jasmine.pp expectedArgs} but it was called with #{jasmine.pp([firstCallArgs])}."
+              "Expected ##{@actual.displayName} not to have been called with #{jasmine.pp expectedArgs} but it was called with #{jasmine.pp([firstCallArgs])}."
             ]
 
         return @actual.calledWith.apply @actual, arguments
