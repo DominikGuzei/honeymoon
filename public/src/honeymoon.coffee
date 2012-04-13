@@ -1,6 +1,10 @@
 
 jasmine.honeymoon =
 
+  integrate: ->
+    beforeEach -> @addMatchers jasmine.honeymoon.Matchers
+    jasmine.honeymoon.Sandbox.overrideJasmineFunctions()
+
   Sandbox:
 
     originalBeforeEach: beforeEach

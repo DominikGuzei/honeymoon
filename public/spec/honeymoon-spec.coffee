@@ -155,7 +155,7 @@ describe 'jasmine.honeymoon.Sandbox.overrideJasmineFunctions', ->
     (expect it).not.toBe @originalIt
 
 
-describe 'jasmine.HoneyMoon.restoreJasmineFunctions', ->
+describe 'jasmine.honeymoon.Sandbox.restoreJasmineFunctions', ->
 
   beforeEach ->
     @originalBeforeEach = beforeEach
@@ -289,3 +289,24 @@ describe 'matcher integration of sinon into jasmine', ->
       matcherResult = Matchers.toHaveBeenCalledWith.call { actual: calledSpy }, first, second
 
       (expect matcherResult).toBe true
+
+
+describe 'jasmine.honeymoon.integrate', ->
+
+  beforeEach ->
+    @specContext = addMatchers: jasmine.createSpy()
+    @originalBeforeEach = (sinon.stub window, 'beforeEach').yieldsOn @specContext
+    @overrideJasmineFunctionsStub = spyOn jasmine.honeymoon.Sandbox, 'overrideJasmineFunctions'
+
+  afterEach ->
+    @originalBeforeEach.restore()
+
+  it 'should tell jasmine to add sinon matchers before each spec', ->
+    jasmine.honeymoon.integrate()
+
+    (expect @specContext.addMatchers).toHaveBeenCalledWith Matchers
+
+  it 'should override jasmine functions with sandboxed ones', ->
+    jasmine.honeymoon.integrate()
+
+    (expect @overrideJasmineFunctionsStub).toHaveBeenCalled()
