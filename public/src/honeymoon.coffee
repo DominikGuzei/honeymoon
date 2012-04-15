@@ -74,6 +74,33 @@ jasmine.honeymoon =
 
         return this.actual.called
 
+    toHaveBeenCalledTimes: (times) ->
+      displayName = ""
+      
+      if jasmine.isSpy @actual
+        displayName = @actual.callCount
+        
+      else
+        unless @actual.callCount? and @actual.displayName?
+          throw "Error in toHaveBeenCalled: Wrong argument. Jasmine or Sinon spy needed."
+
+        displayName = @actual.displayName
+        
+      timesString = if times is 1 then "time" else "times"
+      actualTimesString = if @actual.callCount is 1 then "time" else "times"
+        
+      @message = ->
+        [
+          "Expected ##{displayName} to have been called #{times} #{timesString} but it was called #{@actual.callCount} #{actualTimesString}."
+          "Expected ##{displayName} not to have been called #{times} #{timesString} but it was."
+        ]
+        
+      return @actual.callCount is times
+      
+    toHaveBeenCalledOnce: -> jasmine.honeymoon.Matchers.toHaveBeenCalledTimes.call this, 1
+    toHaveBeenCalledTwice: -> jasmine.honeymoon.Matchers.toHaveBeenCalledTimes.call this, 2
+    toHaveBeenCalledThrice: -> jasmine.honeymoon.Matchers.toHaveBeenCalledTimes.call this, 3
+
     toHaveBeenCalledWith: ->
       if jasmine.isSpy @actual
         jasmine.Matchers.prototype.toHaveBeenCalledWith.apply this, arguments

@@ -291,6 +291,53 @@ describe 'matcher integration of sinon into jasmine', ->
       (expect matcherResult).toBe true
 
 
+  describe 'toHaveBeenCalledTimes', ->
+    
+    it 'should return false when sinon spy was not called correct amount of times', ->
+      matcherResult = Matchers.toHaveBeenCalledTimes.call actual: sinon.spy(), 1
+
+      (expect matcherResult).toBe false
+      
+    it 'should return true when sinon spy was called correct amount of times', ->
+      calledSpy = sinon.spy()
+      calledSpy.callCount = 3
+      
+      matcherResult = Matchers.toHaveBeenCalledTimes.call actual: calledSpy, 3
+
+      (expect matcherResult).toBe true
+      
+    it 'should also handle jasmine spies', ->
+      matcherResult = Matchers.toHaveBeenCalledTimes.call actual: jasmine.createSpy(), 1
+
+      (expect matcherResult).toBe false
+      
+    it 'should handle messages for given spies', ->
+      expectContext = actual: sinon.spy()
+      Matchers.toHaveBeenCalledTimes.call expectContext, 1
+
+      (expect expectContext.message()[0]).toBe "Expected ##{expectContext.actual.displayName} to have been called 1 time but it was called 0 times."
+      (expect expectContext.message()[1]).toBe "Expected ##{expectContext.actual.displayName} not to have been called 1 time but it was."
+  
+  describe 'short hand versions for multiple time call expectations', ->
+    
+    beforeEach -> spyOn Matchers, 'toHaveBeenCalledTimes'
+    
+    it 'should use times matcher for once', ->
+      Matchers.toHaveBeenCalledOnce.call actual: sinon.spy()
+      
+      (expect Matchers.toHaveBeenCalledTimes).toHaveBeenCalledWith 1
+      
+    it 'should use times matcher for twice', ->
+      Matchers.toHaveBeenCalledTwice.call actual: sinon.spy()
+
+      (expect Matchers.toHaveBeenCalledTimes).toHaveBeenCalledWith 2
+      
+    it 'should use times matcher for thrice', ->
+      Matchers.toHaveBeenCalledThrice.call actual: sinon.spy()
+
+      (expect Matchers.toHaveBeenCalledTimes).toHaveBeenCalledWith 3
+      
+
 describe 'jasmine.honeymoon.integrate', ->
 
   beforeEach ->
