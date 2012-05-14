@@ -55,9 +55,9 @@ beforeEach ->
   @spy object, 'methodName'
   @stub object, 'methodName'
   @mock object
-  @server # fake server
-  @requests # requests of fake server
-  @clock # fake timers
+  @server # fake server (only available when configured with useFakeServer: true)
+  @requests # requests of fake server (only available when configured with useFakeServer: true)
+  @clock # fake timers (only available when configured with useFakeTimers: true)
 
 ```
 
