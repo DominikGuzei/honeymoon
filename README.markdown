@@ -61,7 +61,8 @@ beforeEach ->
 
 ```
 
-### 2. Advanced Matchers for Sinon
+2. Advanced Matchers for Sinon
+------------------------------
 
 Other integration projects like [jasmine-sinon](https://github.com/froots/jasmine-sinon) replace the default matchers
 of jasmine with primitive custom matchers for sinon. The problem is that they don't play nicely with existing projects
